@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// @flow
+import * as React from "react";
+import { CreateProject } from "./components/CreateProject";
+import styled from "styled-components";
+import { IProject } from "./Project/IProject";
+import { useState } from "react";
+import { Project as ProjectClass } from "./Project/Project";
+import "gantt-task-react/dist/index.css";
+import { Project } from "./components/Project/Project";
+import {Credits} from "./components/Credits";
 
-function App() {
+type Props = {};
+
+const StyledContainer = styled.div`
+  width: 100%;
+`;
+
+export const App = (props: Props) => {
+  const [projects, setProject] = useState<IProject[]>([]);
+
+  function createProject(name: string, start: Date, end: Date) {
+    setProject((state) => {
+      return [...state, new ProjectClass(name, start, end)];
+    });
+  }
+
+  function deleteProject(id: string) {
+      setProject((state) => state.filter((project) => project.id !== id) )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <StyledContainer>
+      <Credits/>
+      {projects.map((project, i) => {
+        return <Project project={project} key={i} deleteProject={deleteProject}/>;
+      })}
+      <CreateProject createProject={createProject} />
+    </StyledContainer>
   );
-}
-
-export default App;
+};
